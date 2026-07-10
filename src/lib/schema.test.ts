@@ -60,3 +60,35 @@ describe("phase 3 migration", () => {
     expect(phase3Migration).toContain("staff read payment proof objects");
   });
 });
+
+const phase4Migration = readFileSync(
+  join(process.cwd(), "supabase/migrations/20260710122736_phase_4_admin_workflows.sql"),
+  "utf8",
+);
+
+describe("phase 4 migration", () => {
+  it("adds admin workflow tables with RLS enabled", () => {
+    for (const table of [
+      "inventory_movements",
+      "order_status_history",
+      "notifications",
+    ]) {
+      expect(phase4Migration).toContain(`create table public.${table}`);
+      expect(phase4Migration).toContain(`alter table public.${table} enable row level security;`);
+    }
+  });
+
+  it("keeps customer history and notifications scoped to owned orders/users", () => {
+    expect(phase4Migration).toContain("customers read own order status history and staff read all");
+    expect(phase4Migration).toContain("orders.user_id = (select auth.uid())");
+    expect(phase4Migration).toContain("users read own notifications");
+    expect(phase4Migration).toContain("user_id = (select auth.uid())");
+  });
+
+  it("creates a public product image bucket managed only by administrators", () => {
+    expect(phase4Migration).toContain("'product-images'");
+    expect(phase4Migration).toContain("public reads product images");
+    expect(phase4Migration).toContain("admins manage product images bucket");
+    expect(phase4Migration).toContain("app_private.current_user_role() = 'administrator'");
+  });
+});

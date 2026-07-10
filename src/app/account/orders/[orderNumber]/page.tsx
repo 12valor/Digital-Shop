@@ -11,7 +11,8 @@ export default async function AccountOrderPage({
   params: Promise<{ orderNumber: string }>;
 }) {
   const { orderNumber } = await params;
-  const { order, items, proofs } = await getCustomerOrder(orderNumber);
+  const { order, items, proofs, history, notifications } = await getCustomerOrder(orderNumber);
+  const latestRejectedProof = proofs.find((proof) => proof.status === "rejected");
 
   return (
     <div className="border border-zinc-200 bg-white p-6">
@@ -47,9 +48,16 @@ export default async function AccountOrderPage({
       <div className="mt-6 border-t border-zinc-200 pt-5">
         <h2 className="text-lg font-black text-zinc-950">Payment proof</h2>
         {proofs.length > 0 ? (
-          <p className="mt-2 text-sm font-semibold text-emerald-700">
-            Proof submitted. An administrator must review it before the order becomes paid.
-          </p>
+          <div className="mt-2 grid gap-2 text-sm">
+            <p className="font-semibold text-emerald-700">
+              Latest proof status: {proofs[0].status}
+            </p>
+            {latestRejectedProof?.review_notes ? (
+              <p className="border border-red-200 bg-red-50 px-3 py-2 font-semibold text-red-700">
+                Rejection reason: {latestRejectedProof.review_notes}
+              </p>
+            ) : null}
+          </div>
         ) : (
           <Link
             href={`/checkout/payment/${order.order_number}`}
@@ -58,6 +66,32 @@ export default async function AccountOrderPage({
             Submit payment proof
           </Link>
         )}
+      </div>
+      <div className="mt-6 border-t border-zinc-200 pt-5">
+        <h2 className="text-lg font-black text-zinc-950">Status history</h2>
+        <div className="mt-3 grid gap-2 text-sm">
+          {history.map((entry) => (
+            <div key={entry.id} className="border-b border-zinc-100 pb-2">
+              <p className="font-semibold text-zinc-800">
+                {entry.from_status ?? "created"} {"->"} {entry.to_status}
+              </p>
+              {entry.note ? <p className="text-zinc-600">{entry.note}</p> : null}
+            </div>
+          ))}
+          {history.length === 0 ? <p className="text-zinc-600">No status updates yet.</p> : null}
+        </div>
+      </div>
+      <div className="mt-6 border-t border-zinc-200 pt-5">
+        <h2 className="text-lg font-black text-zinc-950">Notifications</h2>
+        <div className="mt-3 grid gap-2 text-sm">
+          {notifications.map((notification) => (
+            <div key={notification.id} className="border-b border-zinc-100 pb-2">
+              <p className="font-semibold text-zinc-800">{notification.title}</p>
+              <p className="text-zinc-600">{notification.message}</p>
+            </div>
+          ))}
+          {notifications.length === 0 ? <p className="text-zinc-600">No notifications yet.</p> : null}
+        </div>
       </div>
     </div>
   );

@@ -34,6 +34,9 @@ export default async function AccountLayout({
             <Link href="/account" className="hover:text-orange-700">
               Profile
             </Link>
+            <Link href="/account/orders" className="hover:text-orange-700">
+              Orders
+            </Link>
             <Link href="/" className="hover:text-orange-700">
               Storefront
             </Link>

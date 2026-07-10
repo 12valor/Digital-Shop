@@ -372,6 +372,70 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["audit_logs"]["Insert"]>;
         Relationships: [];
       };
+      inventory_movements: {
+        Row: {
+          id: string;
+          inventory_id: string | null;
+          product_id: string;
+          variant_id: string | null;
+          actor_id: string | null;
+          movement_type: string;
+          quantity_delta: number;
+          previous_quantity: number;
+          new_quantity: number;
+          reason: string | null;
+          order_id: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["inventory_movements"]["Row"]> & {
+          product_id: string;
+          movement_type: string;
+          quantity_delta: number;
+          previous_quantity: number;
+          new_quantity: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["inventory_movements"]["Insert"]>;
+        Relationships: [];
+      };
+      order_status_history: {
+        Row: {
+          id: string;
+          order_id: string;
+          actor_id: string | null;
+          from_status: Database["public"]["Tables"]["orders"]["Row"]["status"] | null;
+          to_status: Database["public"]["Tables"]["orders"]["Row"]["status"];
+          from_payment_status: Database["public"]["Tables"]["orders"]["Row"]["payment_status"] | null;
+          to_payment_status: Database["public"]["Tables"]["orders"]["Row"]["payment_status"] | null;
+          note: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["order_status_history"]["Row"]> & {
+          order_id: string;
+          to_status: Database["public"]["Tables"]["orders"]["Row"]["status"];
+        };
+        Update: Partial<Database["public"]["Tables"]["order_status_history"]["Insert"]>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          order_id: string | null;
+          type: string;
+          title: string;
+          message: string;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["notifications"]["Row"]> & {
+          user_id: string;
+          type: string;
+          title: string;
+          message: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

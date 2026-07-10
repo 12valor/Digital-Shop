@@ -28,11 +28,38 @@ export async function getCustomerOrder(orderNumber: string) {
     .select("*")
     .eq("order_id", order.id)
     .order("created_at", { ascending: false });
+  const { data: history } = await service
+    .from("order_status_history")
+    .select("*")
+    .eq("order_id", order.id)
+    .order("created_at", { ascending: false });
+  const { data: notifications } = await service
+    .from("notifications")
+    .select("*")
+    .eq("order_id", order.id)
+    .order("created_at", { ascending: false });
 
   return {
     profile,
     order,
     items: items ?? [],
     proofs: proofs ?? [],
+    history: history ?? [],
+    notifications: notifications ?? [],
+  };
+}
+
+export async function getCustomerOrders() {
+  const profile = await requireAuth("/account/orders");
+  const service = getSupabaseServiceClient();
+  const { data: orders } = await service
+    .from("orders")
+    .select("*")
+    .eq("user_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  return {
+    profile,
+    orders: orders ?? [],
   };
 }
