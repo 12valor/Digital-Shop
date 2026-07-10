@@ -12,10 +12,30 @@ Phase 1 expects Supabase credentials in environment variables. Keep service-role
 ## Required Variables
 
 - `NEXT_PUBLIC_SITE_URL`: Local or deployed site URL used for auth redirects.
+- `NEXT_PUBLIC_APP_ENV`: Public environment label such as `local`, `staging`, or `production`.
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL.
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Browser-safe Supabase publishable key.
 - `SUPABASE_SERVICE_ROLE_KEY`: Server-only service role key for bootstrap/admin operations.
 - `ADMIN_BOOTSTRAP_EMAIL`: Email to promote after the account has registered and verified.
+- `NEXT_PUBLIC_SENTRY_DSN`: Browser-safe Sentry DSN. Leave blank to disable event delivery locally.
+- `SENTRY_ENVIRONMENT`: Server-side Sentry environment label.
+- `SENTRY_ORG`: Sentry organization slug for source-map uploads.
+- `SENTRY_PROJECT`: Sentry project slug for source-map uploads.
+- `SENTRY_AUTH_TOKEN`: Server/CI-only Sentry token for uploading source maps.
+
+## Environment Matrix
+
+| Variable | Local | Preview/Staging | Production |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Vercel preview or staging URL | Production domain |
+| `NEXT_PUBLIC_APP_ENV` | `local` | `staging` | `production` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Local Supabase API URL | Staging Supabase URL | Production Supabase URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Local publishable key | Staging publishable key | Production publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Local service role key | Staging service role key | Production service role key |
+| `NEXT_PUBLIC_SENTRY_DSN` | Optional | Staging Sentry DSN | Production Sentry DSN |
+| `SENTRY_AUTH_TOKEN` | Blank | CI/Vercel secret | CI/Vercel secret |
+
+Do not store `.env.local`, service-role keys, or Sentry auth tokens in Git.
 
 ## First Administrator
 

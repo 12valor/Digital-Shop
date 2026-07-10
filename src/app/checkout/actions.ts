@@ -2,10 +2,12 @@
 
 import { randomUUID } from "node:crypto";
 
+import * as Sentry from "@sentry/nextjs";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { validateCheckoutCart } from "@/lib/checkout-validation";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { getStorefrontData } from "@/lib/storefront-data";
 import { getSupabaseServiceClient } from "@/lib/supabase/service";
 import { requireAuth } from "@/lib/auth";
@@ -55,6 +57,15 @@ function getString(formData: FormData, key: string) {
 
 function errorState(message: string): CheckoutActionState {
   return { status: "error", message };
+}
+
+function captureCheckoutError(error: unknown, tag: string) {
+  Sentry.captureException(error, {
+    tags: {
+      area: "checkout",
+      operation: tag,
+    },
+  });
 }
 
 function parseCart(value: string): CheckoutCartItemInput[] {
@@ -202,6 +213,7 @@ export async function createOrderAction(
 
     paymentPath = `/checkout/payment/${order.order_number}`;
   } catch (error) {
+    captureCheckoutError(error, "create_order");
     return errorState(error instanceof Error ? error.message : "Checkout failed.");
   }
 
@@ -224,6 +236,15 @@ export async function submitPaymentProofAction(
 
   if (!parsed.success) {
     return errorState(parsed.error.issues[0]?.message ?? "Check your payment proof details.");
+  }
+
+  const proofLimit = consumeRateLimit(`payment-proof:${profile.id}`, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+
+  if (!proofLimit.allowed) {
+    return errorState("Too many proof uploads. Wait before trying again.");
   }
 
   const file = formData.get("receipt");
@@ -284,7 +305,8 @@ export async function submitPaymentProofAction(
     });
 
   if (uploadError) {
-    return errorState(uploadError.message);
+    captureCheckoutError(uploadError, "payment_proof_upload");
+    return errorState("Receipt upload failed. Try again with a valid file.");
   }
 
   const { error: proofError } = await service.from("payment_proofs").insert({
@@ -302,7 +324,8 @@ export async function submitPaymentProofAction(
   });
 
   if (proofError) {
-    return errorState(proofError.message);
+    captureCheckoutError(proofError, "payment_proof_insert");
+    return errorState("Payment proof could not be saved. Try again later.");
   }
 
   await service

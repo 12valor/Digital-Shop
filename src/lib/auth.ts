@@ -48,7 +48,7 @@ export async function requireRole(roles: UserRole[], next = "/admin") {
   const profile = await requireAuth(next);
 
   if (!roles.includes(profile.role)) {
-    redirect("/account?error=unauthorized");
+    redirect("/unauthorized");
   }
 
   return profile;
@@ -58,7 +58,7 @@ export async function requireAdminArea(next = "/admin") {
   const profile = await requireAuth(next);
 
   if (!canAccessAdmin({ id: profile.id, role: profile.role })) {
-    redirect("/account?error=unauthorized");
+    redirect("/unauthorized");
   }
 
   return profile;

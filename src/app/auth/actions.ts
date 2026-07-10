@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { getPublicSiteUrl } from "@/lib/env";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type AuthActionState = {
@@ -31,6 +32,19 @@ function errorState(message: string): AuthActionState {
   };
 }
 
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+
+function requireAuthRateLimit(key: string, limit = 5) {
+  const result = consumeRateLimit(`auth:${key}`, {
+    limit,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  return result.allowed;
+}
+
 export async function signInAction(
   _previousState: AuthActionState,
   formData: FormData,
@@ -49,11 +63,15 @@ export async function signInAction(
     return errorState(parsed.error.issues[0]?.message ?? "Check your login details.");
   }
 
+  if (!requireAuthRateLimit(`login:${normalizeEmail(parsed.data.email)}`)) {
+    return errorState("Too many attempts. Wait a few minutes before trying again.");
+  }
+
   const supabase = await getSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
-    return errorState(error.message);
+    return errorState("Email or password is incorrect.");
   }
 
   redirect(safeNextPath(formData, "/account"));
@@ -77,6 +95,10 @@ export async function signUpAction(
 
   if (!parsed.success) {
     return errorState(parsed.error.issues[0]?.message ?? "Check your registration details.");
+  }
+
+  if (!requireAuthRateLimit(`register:${normalizeEmail(parsed.data.email)}`, 3)) {
+    return errorState("Too many attempts. Wait a few minutes before trying again.");
   }
 
   const supabase = await getSupabaseServerClient();
@@ -115,6 +137,13 @@ export async function forgotPasswordAction(
 
   if (!parsed.success) {
     return errorState(parsed.error.issues[0]?.message ?? "Enter a valid email address.");
+  }
+
+  if (!requireAuthRateLimit(`forgot:${normalizeEmail(parsed.data)}`, 3)) {
+    return {
+      status: "success",
+      message: "Password reset instructions were sent if that email exists.",
+    } satisfies AuthActionState;
   }
 
   const supabase = await getSupabaseServerClient();

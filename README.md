@@ -1,6 +1,6 @@
 # Digital Shop
 
-Phase 1 foundation for a mobile-first digital shop built with Next.js App Router, TypeScript, Tailwind CSS, and Supabase.
+Mobile-first digital shop built with Next.js App Router, TypeScript, Tailwind CSS, Supabase, manual GCash payment verification, and admin operations.
 
 ## Phase 1 Includes
 
@@ -17,6 +17,11 @@ Phase 1 foundation for a mobile-first digital shop built with Next.js App Router
 
 - Phase 2 adds the marketplace homepage, catalog/search/category/brand/product routes, product cards, carousels, wishlist, recently viewed products, and a local cart.
 - Phase 3 adds server-validated checkout, pending order creation, static GCash QR payment instructions, secure proof upload, duplicate-reference checks, and customer order status pages.
+
+## Phase 4 and 5 Progress
+
+- Phase 4 adds admin product, inventory, payment, order, homepage, notification, and customer tracking workflows.
+- Phase 5 adds Sentry wiring, rate limits for sensitive actions, stronger loading/error/unauthorized states, deployment and recovery docs, security review notes, and Playwright smoke coverage.
 
 ## Getting Started
 
@@ -45,4 +50,8 @@ Run `npm run bootstrap:admin` only after the first administrator has registered 
 npm run lint
 npm run typecheck
 npm run test
+npm run build
+npm run test:e2e
 ```
+
+Production checkout verification requires Supabase credentials, applied migrations, storage buckets, and an administrator account.
