@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { formatPeso } from "@/lib/format";
 import { getCartItemKey, useCartStore } from "@/stores/cart-store";
+import { CheckoutLink } from "@/components/storefront/CheckoutLink";
 
 export function CartClient() {
   const items = useCartStore((state) => state.items);
@@ -82,8 +83,9 @@ export function CartClient() {
           <span className="text-xl font-black text-orange-600">{formatPeso(subtotal)}</span>
         </div>
         <p className="mt-4 text-sm leading-6 text-zinc-600">
-          Server-validated checkout and manual GCash payment will be added in Phase 3.
+          Checkout recalculates product prices, stock, shipping, and totals on the server.
         </p>
+        <CheckoutLink />
       </aside>
     </div>
   );

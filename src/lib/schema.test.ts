@@ -40,3 +40,23 @@ describe("phase 1 migration", () => {
     expect(migration).toContain("gcash_reference_number text not null unique");
   });
 });
+
+const phase3Migration = readFileSync(
+  join(process.cwd(), "supabase/migrations/20260710120724_phase_3_checkout_payment.sql"),
+  "utf8",
+);
+
+describe("phase 3 migration", () => {
+  it("creates sequential order numbers", () => {
+    expect(phase3Migration).toContain("create sequence if not exists app_private.order_number_seq");
+    expect(phase3Migration).toContain("create or replace function public.generate_order_number()");
+    expect(phase3Migration).toContain("'ORD-' || to_char(now(), 'YYYY')");
+  });
+
+  it("keeps payment proofs in a private storage bucket", () => {
+    expect(phase3Migration).toContain("'payment-proofs'");
+    expect(phase3Migration).toContain("false");
+    expect(phase3Migration).toContain("customers upload own payment proofs");
+    expect(phase3Migration).toContain("staff read payment proof objects");
+  });
+});

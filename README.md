@@ -13,6 +13,11 @@ Phase 1 foundation for a mobile-first digital shop built with Next.js App Router
 - Environment documentation and first-admin bootstrap script.
 - Minimal Vitest coverage for access-control rules and migration guardrails.
 
+## Phase 2 and 3 Progress
+
+- Phase 2 adds the marketplace homepage, catalog/search/category/brand/product routes, product cards, carousels, wishlist, recently viewed products, and a local cart.
+- Phase 3 adds server-validated checkout, pending order creation, static GCash QR payment instructions, secure proof upload, duplicate-reference checks, and customer order status pages.
+
 ## Getting Started
 
 ```bash
