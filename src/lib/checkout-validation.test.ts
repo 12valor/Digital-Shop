@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { validateCheckoutCart } from "@/lib/checkout-validation";
-import { demoProducts } from "@/lib/storefront-demo-data";
+import { testProducts } from "@/test/fixtures/storefront-products";
 
 describe("checkout validation", () => {
   it("recalculates totals from trusted product data", () => {
-    const product = demoProducts.find((item) => item.slug === "gosurf-99-data-promo")!;
+    const product = testProducts.find((item) => item.stock > 0)!;
 
-    const result = validateCheckoutCart(demoProducts, [
+    const result = validateCheckoutCart(testProducts, [
       {
         productId: product.id,
         variantId: product.variants[0].id,
@@ -21,10 +21,10 @@ describe("checkout validation", () => {
   });
 
   it("rejects invalid stock at checkout", () => {
-    const product = demoProducts.find((item) => item.slug === "techmate-fast-charge-cable")!;
+    const product = testProducts.find((item) => item.stock === 0)!;
 
     expect(() =>
-      validateCheckoutCart(demoProducts, [
+      validateCheckoutCart(testProducts, [
         {
           productId: product.id,
           variantId: product.variants[0].id,
@@ -35,10 +35,10 @@ describe("checkout validation", () => {
   });
 
   it("rejects invalid variants", () => {
-    const product = demoProducts[0];
+    const product = testProducts[0];
 
     expect(() =>
-      validateCheckoutCart(demoProducts, [
+      validateCheckoutCart(testProducts, [
         {
           productId: product.id,
           variantId: "missing",

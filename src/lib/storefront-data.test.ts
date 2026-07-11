@@ -1,36 +1,28 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getCatalogData,
-  getProductBySlug,
+  applyCatalogFilters,
   parseCatalogSearchParams,
 } from "@/lib/storefront-data";
-import { demoProducts } from "@/lib/storefront-demo-data";
+import { testProducts } from "@/test/fixtures/storefront-products";
 import { canAddProductToCart } from "@/utils/cart-rules";
 
 describe("storefront catalog", () => {
-  it("returns matching active products for search queries", async () => {
-    const result = await getCatalogData({ q: "garena" });
+  it("returns matching active products for search queries", () => {
+    const products = applyCatalogFilters(testProducts, { q: "digital" });
 
-    expect(result.products.map((product) => product.slug)).toContain("garena-shells-100");
+    expect(products.map((product) => product.slug)).toContain("test-digital-product");
   });
 
-  it("filters products by category and sale state", async () => {
-    const result = await getCatalogData({
-      category: "game-credits",
+  it("filters products by category and sale state", () => {
+    const products = applyCatalogFilters(testProducts, {
+      category: "test-category",
       discount: "sale",
     });
 
-    expect(result.products.length).toBeGreaterThan(0);
-    expect(result.products.every((product) => product.category?.slug === "game-credits")).toBe(true);
-    expect(result.products.every((product) => product.salePriceCents)).toBe(true);
-  });
-
-  it("loads product details by slug", async () => {
-    const result = await getProductBySlug("gosurf-99-data-promo");
-
-    expect(result?.product.name).toBe("GoSURF 99 Data Promo");
-    expect(result?.relatedProducts.length).toBeGreaterThan(0);
+    expect(products).toHaveLength(1);
+    expect(products[0].category?.slug).toBe("test-category");
+    expect(products[0].salePriceCents).toBe(8900);
   });
 
   it("parses shareable URL filters", () => {
@@ -52,7 +44,7 @@ describe("storefront catalog", () => {
   });
 
   it("prevents out-of-stock products from being added to cart", () => {
-    const outOfStock = demoProducts.find((product) => product.slug === "techmate-fast-charge-cable");
+    const outOfStock = testProducts.find((product) => product.stock === 0);
 
     expect(outOfStock).toBeDefined();
     expect(canAddProductToCart(outOfStock!, 1)).toBe(false);

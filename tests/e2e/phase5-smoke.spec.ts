@@ -34,10 +34,14 @@ test.describe("phase 5 smoke coverage", () => {
 
     const cards = page.locator("main article");
     const cardCount = await cards.count();
-    expect(cardCount).toBeGreaterThan(0);
-    await expect(cards.nth(0)).toBeVisible();
 
-    if ((page.viewportSize()?.width ?? 0) >= 768) {
+    if (cardCount === 0) {
+      await expect(page.getByRole("heading", { name: "No products found" })).toBeVisible();
+    } else {
+      await expect(cards.nth(0)).toBeVisible();
+    }
+
+    if (cardCount > 0 && (page.viewportSize()?.width ?? 0) >= 768) {
       const filters = await page.locator("main form").boundingBox();
       const firstCard = await cards.nth(0).boundingBox();
       const secondCard = cardCount > 1 ? await cards.nth(1).boundingBox() : null;

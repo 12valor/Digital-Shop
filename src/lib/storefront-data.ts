@@ -6,7 +6,6 @@ import {
   demoBanners,
   demoBrands,
   demoCategories,
-  demoProducts,
 } from "@/lib/storefront-demo-data";
 import type {
   CatalogFilters,
@@ -41,7 +40,7 @@ function discountAmount(product: StorefrontProduct) {
   return product.salePriceCents ? product.priceCents - product.salePriceCents : 0;
 }
 
-function applyCatalogFilters(
+export function applyCatalogFilters(
   products: StorefrontProduct[],
   filters: CatalogFilters,
 ) {
@@ -280,7 +279,7 @@ export const getStorefrontData = cache(async () => {
     supabaseData ?? {
       categories: demoCategories,
       brands: demoBrands,
-      products: demoProducts,
+      products: [],
       banners: demoBanners,
     }
   );
