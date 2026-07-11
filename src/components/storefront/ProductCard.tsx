@@ -2,23 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
 import { motion } from "motion/react";
 
 import { formatPeso, getDiscountPercent } from "@/lib/format";
 import type { StorefrontProduct } from "@/types/storefront";
 import { WishlistButton } from "@/components/storefront/WishlistButton";
 import { getProductPrimaryImage } from "@/utils/storefront-product";
+import { useCartStore } from "@/stores/cart-store";
 
 export function ProductCard({ product }: { product: StorefrontProduct }) {
   const currentPrice = product.salePriceCents ?? product.priceCents;
   const discount = getDiscountPercent(product.priceCents, product.salePriceCents);
   const imageUrl = getProductPrimaryImage(product);
+  const addItem = useCartStore((state) => state.addItem);
+  const canQuickAdd = product.stock > 0 && product.variants.length === 0;
 
   return (
     <motion.article
       whileHover={{ y: -2 }}
       transition={{ duration: 0.18 }}
-      className="group relative flex h-full flex-col border border-zinc-200 bg-white transition hover:border-orange-300 hover:shadow-sm"
+      className="group relative flex h-full flex-col border border-zinc-200 bg-white transition hover:border-orange-300 hover:shadow-md"
     >
       <Link href={`/product/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-zinc-100">
@@ -26,7 +30,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             src={imageUrl}
             alt={product.images[0]?.alt ?? product.name}
             fill
-            loading="eager"
+            loading="lazy"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 220px"
             className="object-cover transition duration-300 group-hover:scale-105"
           />
@@ -75,6 +79,22 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           >
             {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
           </p>
+          {canQuickAdd ? (
+            <button
+              type="button"
+              onClick={() => addItem(product, imageUrl, 1)}
+              className="mt-3 flex h-9 w-full items-center justify-center gap-2 bg-blue-800 px-3 text-xs font-black text-white hover:bg-blue-900"
+            >
+              <ShoppingCart className="size-4" aria-hidden="true" /> Quick add
+            </button>
+          ) : (
+            <Link
+              href={`/product/${product.slug}`}
+              className="mt-3 flex h-9 w-full items-center justify-center border border-zinc-300 px-3 text-xs font-black text-zinc-800 hover:border-blue-700 hover:text-blue-800"
+            >
+              {product.stock > 0 ? "Choose options" : "View details"}
+            </Link>
+          )}
         </div>
       </div>
     </motion.article>

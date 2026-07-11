@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -68,19 +69,25 @@ export function SearchBox({
           placeholder="Search products, brands, and categories"
           className={
             compact
-              ? "h-11 w-full border border-orange-200 bg-orange-50 px-3 text-sm outline-none focus:border-orange-500"
-              : "h-11 w-full border border-orange-200 bg-orange-50/70 px-4 text-sm outline-none transition focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-100"
+              ? "h-11 w-full border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-blue-700"
+              : "h-12 w-full border border-zinc-300 bg-white px-4 text-sm outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
           }
         />
         <button
           type="submit"
-          className="h-11 bg-orange-600 px-4 text-sm font-black text-white hover:bg-orange-700"
+          aria-label="Search"
+          title="Search"
+          className={
+            compact
+              ? "grid size-11 shrink-0 place-items-center bg-orange-500 text-white hover:bg-orange-600"
+              : "grid h-12 w-14 shrink-0 place-items-center bg-blue-800 text-white hover:bg-blue-900"
+          }
         >
-          Search
+          <Search className="size-5" aria-hidden="true" />
         </button>
       </form>
       {(suggestions.data?.length || recentSearches.length) && query.length > 0 ? (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 border border-zinc-200 bg-white shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-50 border border-zinc-200 bg-white shadow-lg">
           {suggestions.data?.map((item) => (
             <Link
               key={`${item.type}-${item.href}`}

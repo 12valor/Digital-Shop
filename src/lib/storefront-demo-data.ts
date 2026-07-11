@@ -229,7 +229,7 @@ export const demoBanners: HomepageBanner[] = [
     id: "banner-main",
     title: "Digital deals delivered fast",
     subtitle: "Browse load, game credits, vouchers, and accessories in one storefront.",
-    imageUrl: "/product-art/marketplace-hero.svg",
+    imageUrl: "/images/digital-marketplace-hero.png",
     href: "/products",
   },
   {

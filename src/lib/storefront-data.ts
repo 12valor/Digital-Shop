@@ -159,6 +159,14 @@ async function getSupabaseStorefrontData() {
     return null;
   }
 
+  if (
+    (categoriesResult.data?.length ?? 0) === 0 &&
+    (brandsResult.data?.length ?? 0) === 0 &&
+    (productsResult.data?.length ?? 0) === 0
+  ) {
+    return null;
+  }
+
   const categories: StorefrontCategory[] =
     categoriesResult.data?.map((category) => ({
       id: category.id,

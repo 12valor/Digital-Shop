@@ -1,5 +1,7 @@
 "use client";
 
+import { Heart } from "lucide-react";
+
 import { useStorefrontStore } from "@/stores/storefront-store";
 
 export function WishlistButton({
@@ -20,9 +22,10 @@ export function WishlistButton({
       aria-label={
         isWishlisted ? `Remove ${productName} from wishlist` : `Add ${productName} to wishlist`
       }
-      className="grid size-9 place-items-center border border-zinc-200 bg-white text-lg font-black text-orange-600 shadow-sm transition hover:border-orange-300"
+      title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+      className="grid size-8 place-items-center border border-zinc-200 bg-white text-orange-600 transition hover:border-orange-300"
     >
-      {isWishlisted ? "♥" : "♡"}
+      <Heart className={isWishlisted ? "size-4 fill-current" : "size-4"} aria-hidden="true" />
     </button>
   );
 }
