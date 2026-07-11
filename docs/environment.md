@@ -45,3 +45,19 @@ Do not store `.env.local`, service-role keys, or Sentry auth tokens in Git.
 4. Run `npm run bootstrap:admin`.
 
 The bootstrap script updates the matching profile with the `administrator` role using the service-role key.
+
+## Hosted Supabase Password Recovery
+
+For reliable server-side password recovery, configure the hosted project to send the token hash to the app confirmation route:
+
+1. In Supabase, open **Authentication > Email Templates > Reset Password**.
+2. Replace the reset button URL with:
+
+```html
+{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/auth/reset-password
+```
+
+3. Under **Authentication > URL Configuration**, set the Site URL to `NEXT_PUBLIC_SITE_URL` and allow `${NEXT_PUBLIC_SITE_URL}/auth/callback` and `${NEXT_PUBLIC_SITE_URL}/auth/reset-password` as redirect URLs.
+4. Save the template, request a fresh reset email, and use the newest link only once. Previously opened or expired links cannot create a recovery session.
+
+The repository copy of the recovery email is in `supabase/templates/recovery.html`. The `/auth/confirm` route verifies the token hash and stores the recovery session in cookies before opening the password form.

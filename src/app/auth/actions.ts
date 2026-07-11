@@ -1,8 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { PASSWORD_RECOVERY_COOKIE } from "@/lib/auth-recovery";
 import { getPublicSiteUrl } from "@/lib/env";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
@@ -178,14 +180,29 @@ export async function resetPasswordAction(
     return errorState(parsed.error.issues[0]?.message ?? "Choose a stronger password.");
   }
 
+  const cookieStore = await cookies();
+
+  if (cookieStore.get(PASSWORD_RECOVERY_COOKIE)?.value !== "1") {
+    return errorState("This reset link is invalid or expired. Request a new password reset email.");
+  }
+
   const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return errorState("This reset link is invalid or expired. Request a new password reset email.");
+  }
+
   const { error } = await supabase.auth.updateUser({
     password: parsed.data,
   });
 
   if (error) {
-    return errorState(error.message);
+    return errorState("Unable to update your password. Request a new reset link and try again.");
   }
 
+  cookieStore.delete(PASSWORD_RECOVERY_COOKIE);
   redirect("/account");
 }

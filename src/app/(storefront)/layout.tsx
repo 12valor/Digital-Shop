@@ -11,10 +11,10 @@ export default async function StorefrontLayout({
   const { categories } = await getStorefrontData();
 
   return (
-    <div className="flex min-h-screen flex-col pb-12 md:pb-0">
+    <div className="flex min-h-screen flex-col pb-14 md:pb-0">
       <StorefrontHeader categories={categories} />
       <main className="flex-1">{children}</main>
-      <StorefrontFooter />
+      <StorefrontFooter categories={categories} />
       <MobileBottomNav />
     </div>
   );
