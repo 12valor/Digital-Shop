@@ -1,5 +1,7 @@
-import { FileLock2, QrCode, ShieldCheck, ShoppingBag } from "lucide-react";
+import { FileLock2, QrCode, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+
+import { BrandLogo } from "@/components/shared/BrandLogo";
 
 import type { StorefrontCategory } from "@/types/storefront";
 
@@ -39,19 +41,7 @@ export function StorefrontFooter({ categories }: { categories: StorefrontCategor
 
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.9fr_0.9fr] lg:py-12">
         <div className="max-w-sm">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
-            aria-label="Digital Shop home"
-          >
-            <span className="grid size-11 place-items-center bg-orange-500 text-white">
-              <ShoppingBag className="size-6" aria-hidden="true" />
-            </span>
-            <span className="leading-none">
-              <span className="block text-xl font-black">DIGITAL</span>
-              <span className="block text-sm font-black text-orange-400">SHOP</span>
-            </span>
-          </Link>
+          <BrandLogo inverse />
           <p className="mt-5 text-sm leading-6 text-blue-100">
             A mobile-first marketplace for load, game credits, gift vouchers, and everyday digital essentials.
           </p>

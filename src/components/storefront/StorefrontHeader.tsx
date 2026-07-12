@@ -4,7 +4,6 @@ import {
   ChevronRight,
   Menu,
   PackageCheck,
-  ShoppingBag,
   UserRound,
   X,
 } from "lucide-react";
@@ -12,6 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { SearchBox } from "@/components/storefront/SearchBox";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import { CartIndicator } from "@/components/storefront/CartIndicator";
 import type { StorefrontCategory } from "@/types/storefront";
 
@@ -43,15 +43,7 @@ export function StorefrontHeader({ categories }: { categories: StorefrontCategor
           {menuOpen ? <X className="size-6" aria-hidden="true" /> : <Menu className="size-6" aria-hidden="true" />}
         </button>
 
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Digital Shop home">
-          <span className="grid size-10 place-items-center bg-orange-500 text-white">
-            <ShoppingBag className="size-6" aria-hidden="true" />
-          </span>
-          <span className="hidden leading-none sm:block">
-            <span className="block text-lg font-black text-blue-900">DIGITAL</span>
-            <span className="block text-sm font-black text-orange-500">SHOP</span>
-          </span>
-        </Link>
+        <BrandLogo />
 
         <div className="hidden flex-1 md:block">
           <SearchBox id="site-search" />

@@ -67,6 +67,12 @@ test.describe("phase 5 smoke coverage", () => {
     await expect(page.getByRole("button", { name: "Update password" })).toHaveCount(0);
   });
 
+  test("account area redirects logged-out customers to sign in", async ({ page }) => {
+    await page.goto("/account");
+
+    await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+    expect(new URL(page.url()).searchParams.get("next")).toBe("/account");
+  });
   test("admin route enforces setup or authentication guard", async ({ page }) => {
     const consoleErrors: string[] = [];
     page.on("console", (message) => {
