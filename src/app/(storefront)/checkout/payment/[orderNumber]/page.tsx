@@ -64,7 +64,10 @@ export default async function PaymentPage({
               </div>
             </div>
           </div>
-          <PaymentProofForm orderNumber={order.order_number} />
+          <PaymentProofForm
+            orderNumber={order.order_number}
+            totalCents={order.total_cents}
+          />
         </section>
         <aside className="h-fit border border-zinc-200 bg-white p-4">
           <h2 className="text-xl font-black text-zinc-950">Manual GCash payment</h2>
